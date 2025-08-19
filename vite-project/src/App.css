@@ -1,0 +1,76 @@
+/* Reset default margin/padding */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: Arial, sans-serif;
+  background-color: #f4f4f9;
+}
+
+/* Container ko bilkul center mein rakhna */
+.app-container {
+  display: flex;
+  justify-content: center; 
+  align-items: flex-start; 
+  min-height: 100vh; 
+  padding-top: 40px;  
+}
+
+/* Box styling */
+.task-box {
+  background: #fff;
+  padding: 20px;
+  border-radius: 12px;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+  width: 100%;
+  max-width: 400px;
+  text-align: center;
+}
+
+h1 {
+  font-size: 24px;
+  margin-bottom: 20px;
+}
+
+/* Task input area */
+input {
+  padding: 8px;
+  width: 70%;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+}
+
+button {
+  padding: 8px 12px;
+  margin-left: 5px;
+  border: none;
+  background: #4CAF50;
+  color: white;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+button:hover {
+  background: #45a049;
+}
+
+/* Task list */
+ul {
+  list-style: none;
+  padding: 0;
+  margin-top: 20px;
+}
+
+li {
+  background: #f9f9f9;
+  margin-bottom: 8px;
+  padding: 8px;
+  border-radius: 6px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
