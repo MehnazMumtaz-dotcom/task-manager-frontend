@@ -1,31 +1,61 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { FaPlus, FaTrash, FaEdit, FaSave } from "react-icons/fa"; // icons
 
 function App() {
   const [tasks, setTasks] = useState([]);
   const [task, setTask] = useState("");
-  const [editIndex, setEditIndex] = useState(null);
+  const [editId, setEditId] = useState(null);
 
+  const API_URL = "http://127.0.0.1:8000/tasks"; // 👈 apna backend ka URL
+
+  // GET: sari tasks fetch krny k liye (page reload hone par bhi)
+  useEffect(() => {
+    fetch(API_URL)
+      .then((res) => res.json())
+      .then((data) => setTasks(data))
+      .catch((err) => console.error("Error fetching tasks:", err));
+  }, []);
+
+  // POST ya PUT: naya task add krny ya edit krny k liye
   const addTask = () => {
     if (!task.trim()) return;
-    if (editIndex !== null) {
-      const updatedTasks = [...tasks];
-      updatedTasks[editIndex] = task;
-      setTasks(updatedTasks);
-      setEditIndex(null);
+
+    if (editId !== null) {
+      // agar edit mode on h to PUT request
+      fetch(`${API_URL}/${editId}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ title: task }),
+      })
+        .then((res) => res.json())
+        .then((updatedTask) => {
+          setTasks(tasks.map((t) => (t.id === editId ? updatedTask : t)));
+          setEditId(null);
+          setTask("");
+        });
     } else {
-      setTasks([...tasks, task]);
+      // naya task add krny k liye POST request
+      fetch(API_URL, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ title: task }),
+      })
+        .then((res) => res.json())
+        .then((newTask) => setTasks([...tasks, newTask]));
+      setTask("");
     }
-    setTask("");
   };
 
-  const deleteTask = (index) => {
-    setTasks(tasks.filter((_, i) => i !== index));
+  // DELETE: task delete krny k liye
+  const deleteTask = (id) => {
+    fetch(`${API_URL}/${id}`, { method: "DELETE" })
+      .then(() => setTasks(tasks.filter((t) => t.id !== id)));
   };
 
-  const editTask = (index) => {
-    setTask(tasks[index]);
-    setEditIndex(index);
+  // EDIT: edit mode on
+  const editTask = (t) => {
+    setTask(t.title);
+    setEditId(t.id);
   };
 
   return (
@@ -41,22 +71,19 @@ function App() {
           className="task-input"
         />
         <button onClick={addTask} className="btn add-btn">
-          {editIndex !== null ? <FaSave /> : <FaPlus />}
+          {editId !== null ? <FaSave /> : <FaPlus />}
         </button>
       </div>
 
       <ul className="task-list">
-        {tasks.map((t, index) => (
-          <li key={index} className="task-item">
-            <span>{t}</span>
+        {tasks.map((t) => (
+          <li key={t.id} className="task-item">
+            <span>{t.title}</span>
             <div className="actions">
-              <button onClick={() => editTask(index)} className="btn edit-btn">
+              <button onClick={() => editTask(t)} className="btn edit-btn">
                 <FaEdit />
               </button>
-              <button
-                onClick={() => deleteTask(index)}
-                className="btn delete-btn"
-              >
+              <button onClick={() => deleteTask(t.id)} className="btn delete-btn">
                 <FaTrash />
               </button>
             </div>
@@ -68,6 +95,7 @@ function App() {
 }
 
 export default App;
+
 
 
 
