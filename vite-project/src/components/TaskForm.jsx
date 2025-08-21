@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 
-function TaskForm({ addTask, updateTask, editingTask }) {
+function TaskForm({ fetchTasks, editingTask, setEditingTask }) {
   const [text, setText] = useState("");
 
   useEffect(() => {
@@ -9,16 +9,34 @@ function TaskForm({ addTask, updateTask, editingTask }) {
     }
   }, [editingTask]);
 
-  const handleSubmit = (e) => {
+  // Task add/update backend par bhejna
+  const handleSubmit = async (e) => {
     e.preventDefault();
     if (!text.trim()) return;
 
-    if (editingTask) {
-      updateTask(editingTask.id, text);
-    } else {
-      addTask(text);
+    try {
+      if (editingTask) {
+        // Update existing task
+        await fetch(`http://127.0.0.1:8000/tasks/${editingTask.id}`, {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ text }),
+        });
+        setEditingTask(null);
+      } else {
+        // Add new task
+        await fetch("http://127.0.0.1:8000/tasks", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ text }),
+        });
+      }
+
+      setText("");
+      fetchTasks(); // Backend se latest tasks dobara le aao
+    } catch (error) {
+      console.error("Error saving task:", error);
     }
-    setText("");
   };
 
   return (
@@ -35,3 +53,4 @@ function TaskForm({ addTask, updateTask, editingTask }) {
 }
 
 export default TaskForm;
+
