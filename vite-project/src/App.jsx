@@ -1,100 +1,96 @@
 import React, { useState, useEffect } from "react";
-import { FaPlus, FaTrash, FaEdit, FaSave } from "react-icons/fa"; // icons
+import TaskForm from "./TaskForm";
+import TaskList from "./TaskList";
 
 function App() {
   const [tasks, setTasks] = useState([]);
-  const [task, setTask] = useState("");
-  const [editId, setEditId] = useState(null);
+  const [editingTask, setEditingTask] = useState(null);
 
-  const API_URL = "http://127.0.0.1:8000/tasks"; // 👈 apna backend ka URL
+  // ✅ Backend ka base URL (yahan apna FastAPI ka deployed/local URL daalo)
+  const API_URL = "http://127.0.0.1:8000/tasks";
 
-  // GET: sari tasks fetch krny k liye (page reload hone par bhi)
-  useEffect(() => {
-    fetch(API_URL)
-      .then((res) => res.json())
-      .then((data) => setTasks(data))
-      .catch((err) => console.error("Error fetching tasks:", err));
-  }, []);
-
-  // POST ya PUT: naya task add krny ya edit krny k liye
-  const addTask = () => {
-    if (!task.trim()) return;
-
-    if (editId !== null) {
-      // agar edit mode on h to PUT request
-      fetch(`${API_URL}/${editId}`, {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ title: task }),
-      })
-        .then((res) => res.json())
-        .then((updatedTask) => {
-          setTasks(tasks.map((t) => (t.id === editId ? updatedTask : t)));
-          setEditId(null);
-          setTask("");
-        });
-    } else {
-      // naya task add krny k liye POST request
-      fetch(API_URL, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ title: task }),
-      })
-        .then((res) => res.json())
-        .then((newTask) => setTasks([...tasks, newTask]));
-      setTask("");
+  // ✅ backend se tasks fetch karna
+  const fetchTasks = async () => {
+    try {
+      const response = await fetch(API_URL);
+      const data = await response.json();
+      setTasks(data);
+    } catch (error) {
+      console.error("Error fetching tasks:", error);
     }
   };
 
-  // DELETE: task delete krny k liye
-  const deleteTask = (id) => {
-    fetch(`${API_URL}/${id}`, { method: "DELETE" })
-      .then(() => setTasks(tasks.filter((t) => t.id !== id)));
+  useEffect(() => {
+    fetchTasks();
+  }, []);
+
+  // ✅ Add task
+  const addTask = async (text) => {
+    try {
+      const response = await fetch(API_URL, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ text }),
+      });
+      const newTask = await response.json();
+      setTasks([...tasks, newTask]);
+    } catch (error) {
+      console.error("Error adding task:", error);
+    }
   };
 
-  // EDIT: edit mode on
-  const editTask = (t) => {
-    setTask(t.title);
-    setEditId(t.id);
+  // ✅ Update task
+  const updateTask = async (id, newText) => {
+    try {
+      const response = await fetch(`${API_URL}/${id}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ text: newText }),
+      });
+      const updatedTask = await response.json();
+      setTasks(tasks.map((task) => (task.id === id ? updatedTask : task)));
+      setEditingTask(null);
+    } catch (error) {
+      console.error("Error updating task:", error);
+    }
+  };
+
+  // ✅ Delete task
+  const deleteTask = async (id) => {
+    try {
+      await fetch(`${API_URL}/${id}`, { method: "DELETE" });
+      setTasks(tasks.filter((task) => task.id !== id));
+    } catch (error) {
+      console.error("Error deleting task:", error);
+    }
+  };
+
+  // ✅ Edit start
+  const startEditing = (task) => {
+    setEditingTask(task);
   };
 
   return (
     <div className="app-container">
-      <h1 className="title"> Task Manager</h1>
+      <h1 className="title">Task Manager</h1>
 
-      <div className="input-section">
-        <input
-          type="text"
-          placeholder="Enter a task..."
-          value={task}
-          onChange={(e) => setTask(e.target.value)}
-          className="task-input"
-        />
-        <button onClick={addTask} className="btn add-btn">
-          {editId !== null ? <FaSave /> : <FaPlus />}
-        </button>
-      </div>
+      <TaskForm
+        addTask={addTask}
+        updateTask={updateTask}
+        editingTask={editingTask}
+      />
 
-      <ul className="task-list">
-        {tasks.map((t) => (
-          <li key={t.id} className="task-item">
-            <span>{t.title}</span>
-            <div className="actions">
-              <button onClick={() => editTask(t)} className="btn edit-btn">
-                <FaEdit />
-              </button>
-              <button onClick={() => deleteTask(t.id)} className="btn delete-btn">
-                <FaTrash />
-              </button>
-            </div>
-          </li>
-        ))}
-      </ul>
+      <TaskList
+        tasks={tasks}
+        deleteTask={deleteTask}
+        startEditing={startEditing}
+      />
     </div>
   );
 }
 
 export default App;
+
 
 
 
