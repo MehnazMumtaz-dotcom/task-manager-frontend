@@ -1,6 +1,18 @@
 import React from "react";
 
-function TaskList({ tasks, deleteTask, startEditing }) {
+function TaskList({ tasks, fetchTasks, startEditing }) {
+  // ✅ delete task backend se
+  const deleteTask = async (id) => {
+    try {
+      await fetch(`http://127.0.0.1:8000/tasks/${id}`, {
+        method: "DELETE",
+      });
+      fetchTasks(); // fresh list reload from backend
+    } catch (error) {
+      console.error("Error deleting task:", error);
+    }
+  };
+
   return (
     <div>
       {tasks.map((task) => (
@@ -21,3 +33,4 @@ function TaskList({ tasks, deleteTask, startEditing }) {
 }
 
 export default TaskList;
+
