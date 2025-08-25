@@ -1,36 +1,44 @@
 import React from "react";
+import { FaTrash, FaEdit, FaCheck } from "react-icons/fa";
 
-function TaskList({ tasks, fetchTasks, startEditing }) {
-  // ✅ delete task backend se
-  const deleteTask = async (id) => {
-    try {
-      await fetch(`http://127.0.0.1:8000/tasks/${id}`, {
-        method: "DELETE",
-      });
-      fetchTasks(); // fresh list reload from backend
-    } catch (error) {
-      console.error("Error deleting task:", error);
-    }
-  };
-
+function TaskList({ tasks, updateTask, deleteTask }) {
   return (
-    <div>
+    <ul className="task-list">
       {tasks.map((task) => (
-        <div key={task.id} className="task">
-          <span>{task.text}</span>
-          <div>
-            <button className="edit" onClick={() => startEditing(task)}>
-              Edit
+        <li key={task.id} className={task.completed ? "completed" : ""}>
+          <span>{task.title}</span>
+          <div className="task-actions">
+            <button
+              onClick={() =>
+                updateTask(task.id, {
+                  title: task.title,
+                  completed: !task.completed,
+                })
+              }
+              className="btn-complete"
+            >
+              <FaCheck />
             </button>
-            <button className="delete" onClick={() => deleteTask(task.id)}>
-              Delete
+            <button
+              onClick={() =>
+                updateTask(task.id, { title: prompt("Edit task:", task.title), completed: task.completed })
+              }
+              className="btn-edit"
+            >
+              <FaEdit />
+            </button>
+            <button onClick={() => deleteTask(task.id)} className="btn-delete">
+              <FaTrash />
             </button>
           </div>
-        </div>
+        </li>
       ))}
-    </div>
+    </ul>
   );
 }
 
 export default TaskList;
+
+
+
 

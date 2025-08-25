@@ -1,76 +1,112 @@
-/* Reset default margin/padding */
-* {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
-}
-
-body {
-  font-family: Arial, sans-serif;
-  background-color: #f4f4f9;
-}
-
-/* Container ko bilkul center mein rakhna */
 .app-container {
-  display: flex;
-  justify-content: center; 
-  align-items: flex-start; 
-  min-height: 100vh; 
-  padding-top: 40px;  
-}
-
-/* Box styling */
-.task-box {
-  background: #fff;
-  padding: 20px;
-  border-radius: 12px;
-  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
   width: 100%;
-  max-width: 400px;
-  text-align: center;
+  max-width: 500px;
+  background: white;
+  padding: 20px;
+  border-radius: 15px;
+  margin-top: 20px;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.473);
 }
 
-h1 {
-  font-size: 24px;
+.app-title {
+  text-align: center;
+  color: #333;
   margin-bottom: 20px;
 }
 
-/* Task input area */
-input {
-  padding: 8px;
-  width: 70%;
-  border: 1px solid #ccc;
-  border-radius: 6px;
+/* Form */
+.task-form {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 20px;
 }
 
-button {
-  padding: 8px 12px;
-  margin-left: 5px;
+.task-form input {
+  flex: 1;
+  padding: 10px;
+  border: 2px solid #ddd;
+  border-radius: 10px;
+  outline: none;
+  font-size: 16px;
+}
+
+.btn-add {
+  background: #4cafef;
   border: none;
-  background: #4CAF50;
+  padding: 10px 15px;
+  margin-left: 10px;
+  border-radius: 50%;
   color: white;
-  border-radius: 6px;
   cursor: pointer;
+  transition: 0.3s;
 }
 
-button:hover {
-  background: #45a049;
+.btn-add:hover {
+  background: #2196f3;
 }
 
-/* Task list */
-ul {
+/* Task List */
+.task-list {
   list-style: none;
-  padding: 0;
-  margin-top: 20px;
 }
 
-li {
-  background: #f9f9f9;
-  margin-bottom: 8px;
-  padding: 8px;
-  border-radius: 6px;
+.task-list li {
+  background: #f1f3f6;
+  margin-bottom: 10px;
+  padding: 12px;
+  border-radius: 10px;
   display: flex;
   justify-content: space-between;
   align-items: center;
 }
+
+.task-list li.completed span {
+  text-decoration: line-through;
+  color: gray;
+}
+
+.task-actions button {
+  margin-left: 5px;
+  border: none;
+  padding: 8px;
+  border-radius: 50%;
+  cursor: pointer;
+  transition: 0.2s;
+  color: white;
+}
+
+.btn-complete {
+  background: #4caf50;
+}
+.btn-complete:hover {
+  background: #45a049;
+}
+
+.btn-edit {
+  background: #ff9800;
+}
+.btn-edit:hover {
+  background: #e68900;
+}
+
+.btn-delete {
+  background: #f44336;
+}
+.btn-delete:hover {
+  background: #da190b;
+}
+
+/* Responsive */
+@media (max-width: 600px) {
+  .app-container {
+    width: 100%;
+    padding: 15px;
+  }
+  .task-form input {
+    font-size: 14px;
+  }
+}
+
+
+
 
